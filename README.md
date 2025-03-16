@@ -10,7 +10,6 @@ This project is an Online Learning Platform that allows users to access various 
 - Course Catalog
 - Course Enrollment
 - Progress Tracking
-- Interactive Quizzes
 
 ## Code Structure
 
