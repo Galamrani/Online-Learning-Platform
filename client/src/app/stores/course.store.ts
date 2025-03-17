@@ -143,7 +143,6 @@ export class CourseStore {
   pushLesson(courseId: string, lesson: LessonModel) {
     const course = this._createdCourses.get(courseId);
     if (!course || !course.lessons) {
-      console.log('im here: ');
       return;
     }
 

@@ -55,6 +55,11 @@ export class CourseManagerService {
     return this.courseStore.isEnrolledToCourse(courseId);
   }
 
+  getCreatedCourseById(courseId: string): CourseModel | undefined {
+    const cachedCourse = this.courseStore.getCreatedCourseById(courseId);
+    return cachedCourse;
+  }
+
   deleteCourse(id: string): Observable<boolean> {
     return this.courseApiService.deleteCourse(id).pipe(
       tap(() => {
@@ -154,7 +159,6 @@ export class CourseManagerService {
 
       case CourseViewType.Instructor:
         const cachedCourse = this.courseStore.getCreatedCourseById(courseId);
-        console.log(cachedCourse);
         if (cachedCourse) return of(cachedCourse); // Wrap the existing course in an Observable
         return this.courseApiService.getFullCourseDetails(courseId);
 

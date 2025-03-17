@@ -36,7 +36,7 @@ export class EditCourseComponent {
     private router: Router,
     private route: ActivatedRoute,
     private formBuilder: FormBuilder,
-    private CourseManagerService: CourseManagerService
+    private courseManagerService: CourseManagerService
   ) {
     this.courseForm = this.formBuilder.group({
       title: [
@@ -49,19 +49,34 @@ export class EditCourseComponent {
       ],
       description: ['', [Validators.maxLength(2000)]],
     });
+
+    const courseId = this.route.snapshot.paramMap.get('id'); // Get from paramMap (not queryParamMap)
+    if (!courseId) {
+      console.error('Missing courseId in route parameters.');
+      return;
+    }
+
+    const course = this.courseManagerService.getCreatedCourseById(courseId);
+    if (!course) {
+      console.error('Course not found.');
+      return;
+    }
+
+    this.courseForm.patchValue({
+      title: course.title,
+      description: course.description,
+    });
   }
 
   async send() {
-    const id = this.route.snapshot.paramMap.get('id');
-
     const course: CourseModel = {
-      id: id!,
+      id: this.route.snapshot.paramMap.get('id')!,
       title: this.courseForm.get('title')!.value,
       description: this.courseForm.get('description')!.value,
       creatorId: this.userStore.getUserId()!,
     };
 
-    this.CourseManagerService.updateCourse(course).subscribe({
+    this.courseManagerService.updateCourse(course).subscribe({
       next: () => {
         this.toastr.success('Course has been successfully updated!');
         this.router.navigate(['/courses', 'instructor']);

@@ -28,7 +28,7 @@ export class EditLessonComponent {
     private toastr: ToastrService,
     private route: ActivatedRoute,
     private formBuilder: FormBuilder,
-    private CourseManagerService: CourseManagerService
+    private courseManagerService: CourseManagerService
   ) {
     this.lessonForm = this.formBuilder.group({
       title: [
@@ -41,6 +41,28 @@ export class EditLessonComponent {
       ],
       description: ['', [Validators.maxLength(2000)]],
       videoUrl: ['', [Validators.required, Validators.pattern('https?://.+')]],
+    });
+
+    const lessonId = this.route.snapshot.paramMap.get('id'); // Route param
+    const courseId = this.route.snapshot.queryParamMap.get('courseId'); // Query param
+
+    if (!lessonId || !courseId) {
+      console.error('Missing lessonId or courseId in route parameters.');
+      return;
+    }
+
+    const course = this.courseManagerService.getCreatedCourseById(courseId);
+    const lesson = course?.lessons?.find((l) => l.id === lessonId);
+
+    if (!lesson) {
+      console.error('Lesson not found.');
+      return;
+    }
+
+    this.lessonForm.patchValue({
+      title: lesson.title,
+      description: lesson.description,
+      videoUrl: lesson.videoUrl,
     });
   }
 
@@ -56,7 +78,7 @@ export class EditLessonComponent {
       courseId: courseId!,
     };
 
-    this.CourseManagerService.updateLesson(lesson.courseId, lesson).subscribe({
+    this.courseManagerService.updateLesson(lesson.courseId, lesson).subscribe({
       next: () => {
         this.toastr.success('Lesson has been successfully updated!');
         this.router.navigate(['/courses', 'details', courseId]);
