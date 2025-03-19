@@ -1,7 +1,4 @@
 using OnlineLearning.API;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 public class SeedData
 {
@@ -19,13 +16,18 @@ public class SeedData
             // Courses
             ["course1"] = Guid.NewGuid(),
             ["course2"] = Guid.NewGuid(),
+            ["course3"] = Guid.NewGuid(),
+            ["course4"] = Guid.NewGuid(),
 
             // Lessons
             ["lesson1"] = Guid.NewGuid(),
             ["lesson2"] = Guid.NewGuid(),
             ["lesson3"] = Guid.NewGuid(),
             ["lesson4"] = Guid.NewGuid(),
-            ["lesson5"] = Guid.NewGuid()
+            ["lesson5"] = Guid.NewGuid(),
+            ["lesson6"] = Guid.NewGuid(),
+            ["lesson7"] = Guid.NewGuid(),
+            ["lesson8"] = Guid.NewGuid()
         };
     }
 
@@ -45,64 +47,101 @@ public class SeedData
     {
         return new[]
         {
-            CreateCourse(
-                "course1",
-                "Introduction to C# Programming",
-                "A comprehensive course covering the basics of C# programming language.",
-                "user1",
-                DateTime.Parse("2025-01-28")
-            ),
-            CreateCourse(
-                "course2",
-                "Advanced Entity Framework Core",
-                "Deep dive into EF Core with practical examples and best practices.",
-                "user1",
-                DateTime.Parse("2025-02-07")
-            )
+        CreateCourse(
+            "course1",
+            "Introduction to C# Programming",
+            "A comprehensive course covering the basics of C# programming language, including syntax, data types, and object-oriented concepts.",
+            "user1",
+            DateTime.Parse("2025-01-28")
+        ),
+        CreateCourse(
+            "course2",
+            "Mastering Entity Framework Core",
+            "An in-depth guide to working with Entity Framework Core, covering migrations, relationships, and performance optimization.",
+            "user1",
+            DateTime.Parse("2025-02-07")
+        ),
+        CreateCourse(
+            "course3",
+            "Building RESTful APIs with ASP.NET Core",
+            "Learn how to design and develop robust REST APIs using ASP.NET Core, covering controllers, authentication, and best practices.",
+            "user1",
+            DateTime.Parse("2025-02-14")
+        ),
+        CreateCourse(
+            "course4",
+            "Unit Testing in .NET",
+            "A hands-on course focused on writing effective unit tests in .NET using xUnit, Moq, and Test-Driven Development (TDD) principles.",
+            "user1",
+            DateTime.Parse("2025-02-21")
+        )
         };
     }
+
 
     public Lesson[] SeedLessonsData()
     {
         return new[]
         {
-            CreateLesson(
-                "lesson1",
-                "course1",
-                "Getting Started with C#",
-                "Installation and setup of development environment.",
-                "https://www.youtube.com/watch?v=ravLFzIguCM"
-            ),
-            CreateLesson(
-                "lesson2",
-                "course1",
-                "Variables and Data Types",
-                "Understanding variables and different data types in C#.",
-                "https://www.youtube.com/watch?v=_D-HCF3jZKk"
-            ),
-            CreateLesson(
-                "lesson3",
-                "course2",
-                "Control Structures",
-                "If statements, loops, and switch cases.",
-                "https://www.youtube.com/watch?v=IzzNzSXkCMM"
-            ),
-            CreateLesson(
-                "lesson4",
-                "course2",
-                "Control Structures",
-                "If statements, loops, and switch cases.",
-                "https://www.youtube.com/watch?v=IzzNzSXkCMM"
-            ),
-            CreateLesson(
-                "lesson5",
-                "course2",
-                "Control Structures",
-                "If statements, loops, and switch cases.",
-                "https://www.youtube.com/watch?v=IzzNzSXkCMM"
-            )
+        CreateLesson(
+            "lesson1",
+            "course1",
+            "Getting Started with C#",
+            "Installation and setup of development environment.",
+            "https://www.youtube.com/watch?v=ravLFzIguCM"
+        ),
+        CreateLesson(
+            "lesson2",
+            "course1",
+            "Variables and Data Types",
+            "Understanding variables and different data types in C#.",
+            "https://www.youtube.com/watch?v=_D-HCF3jZKk"
+        ),
+        CreateLesson(
+            "lesson3",
+            "course1",
+            "Operators and Expressions",
+            "Learn about arithmetic, logical, and comparison operators in C#.",
+            "https://www.youtube.com/watch?v=WL7QEhdqh00"
+        ),
+        CreateLesson(
+            "lesson4",
+            "course2",
+            "Introduction to Entity Framework Core",
+            "Overview of EF Core and setting up the DbContext.",
+            "https://www.youtube.com/watch?v=KcFWOMbGJ4M"
+        ),
+        CreateLesson(
+            "lesson5",
+            "course2",
+            "Working with Migrations",
+            "How to create and apply migrations in EF Core.",
+            "https://www.youtube.com/watch?v=ZoKRFVBsm7E"
+        ),
+        CreateLesson(
+            "lesson6",
+            "course2",
+            "Querying Data with LINQ",
+            "Learn how to use LINQ queries in EF Core to fetch data.",
+            "https://www.youtube.com/watch?v=DuozyaJQQ1U"
+        ),
+        CreateLesson(
+            "lesson7",
+            "course3",
+            "Building RESTful APIs with ASP.NET Core",
+            "Understanding controllers, routing, and API responses.",
+            "https://www.youtube.com/watch?v=JiJeZOHx0ow"
+        ),
+        CreateLesson(
+            "lesson8",
+            "course3",
+            "Authentication and Authorization",
+            "Implementing authentication and role-based authorization in ASP.NET Core.",
+            "https://www.youtube.com/watch?v=eUW2CYAT1Nk"
+        )
         };
     }
+
 
     public Enrollment[] SeedEnrollmentsData()
     {
