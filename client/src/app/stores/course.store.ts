@@ -30,9 +30,9 @@ enum CoursesStorageKey {
 @Injectable({ providedIn: 'root' })
 export class CourseStore {
   private _createdCourses: Map<string, CourseModel> =
-    this.loadFromLocalStorage(CoursesStorageKey.CreatedCourses) || new Map();
+    this.loadFromStorage(CoursesStorageKey.CreatedCourses) || new Map();
   private _enrolledCourses: Map<string, CourseModel> =
-    this.loadFromLocalStorage(CoursesStorageKey.EnrolledCourses) || new Map();
+    this.loadFromStorage(CoursesStorageKey.EnrolledCourses) || new Map();
 
   reset() {
     this._createdCourses.clear();
@@ -74,17 +74,14 @@ export class CourseStore {
     this._createdCourses = new Map(
       courses.map((course) => [course.id!, course])
     );
-    this.saveToLocalStorage(
-      CoursesStorageKey.CreatedCourses,
-      this._createdCourses
-    );
+    this.saveToStorage(CoursesStorageKey.CreatedCourses, this._createdCourses);
   }
 
   setEnrolledCourses(courses: CourseModel[]) {
     this._enrolledCourses = new Map(
       courses.map((course) => [course.id!, course])
     );
-    this.saveToLocalStorage(
+    this.saveToStorage(
       CoursesStorageKey.EnrolledCourses,
       this._enrolledCourses
     );
@@ -95,7 +92,7 @@ export class CourseStore {
 
     if (this._enrolledCourses.has(course.id)) {
       this._enrolledCourses.set(course.id, course);
-      this.saveToLocalStorage(
+      this.saveToStorage(
         CoursesStorageKey.EnrolledCourses,
         this._enrolledCourses
       );
@@ -105,16 +102,13 @@ export class CourseStore {
   pushCreatedCourse(course: CourseModel) {
     if (!course.id) return;
     this._createdCourses.set(course.id, course);
-    this.saveToLocalStorage(
-      CoursesStorageKey.CreatedCourses,
-      this._createdCourses
-    );
+    this.saveToStorage(CoursesStorageKey.CreatedCourses, this._createdCourses);
   }
 
   pushEnrolledCourse(course: CourseModel) {
     if (!course.id) return;
     this._enrolledCourses.set(course.id, course);
-    this.saveToLocalStorage(
+    this.saveToStorage(
       CoursesStorageKey.EnrolledCourses,
       this._enrolledCourses
     );
@@ -124,15 +118,12 @@ export class CourseStore {
     this.removeEnrolledCourse(courseId);
     this._createdCourses.delete(courseId);
     this._enrolledCourses.delete(courseId);
-    this.saveToLocalStorage(
-      CoursesStorageKey.CreatedCourses,
-      this._createdCourses
-    );
+    this.saveToStorage(CoursesStorageKey.CreatedCourses, this._createdCourses);
   }
 
   removeEnrolledCourse(courseId: string) {
     this._enrolledCourses.delete(courseId);
-    this.saveToLocalStorage(
+    this.saveToStorage(
       CoursesStorageKey.EnrolledCourses,
       this._enrolledCourses
     );
@@ -184,14 +175,14 @@ export class CourseStore {
   ) {
     if (courseStorageKey === CoursesStorageKey.CreatedCourses) {
       this._createdCourses.set(course.id!, course);
-      this.saveToLocalStorage(courseStorageKey, this._createdCourses);
+      this.saveToStorage(courseStorageKey, this._createdCourses);
     } else if (courseStorageKey === CoursesStorageKey.EnrolledCourses) {
       this._enrolledCourses.set(course.id!, course);
-      this.saveToLocalStorage(courseStorageKey, this._enrolledCourses);
+      this.saveToStorage(courseStorageKey, this._enrolledCourses);
     }
   }
 
-  private loadFromLocalStorage(key: string): Map<string, CourseModel> {
+  private loadFromStorage(key: string): Map<string, CourseModel> {
     const data = localStorage.getItem(key);
     try {
       const parsedData = data ? JSON.parse(data) : [];
@@ -202,7 +193,7 @@ export class CourseStore {
     }
   }
 
-  private saveToLocalStorage(key: string, data: Map<string, CourseModel>) {
+  private saveToStorage(key: string, data: Map<string, CourseModel>) {
     // Convert Map to array before storing, because Map is not directly serializable in JavaScript!
     localStorage.setItem(key, JSON.stringify(Array.from(data.entries())));
   }
