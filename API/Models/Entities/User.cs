@@ -14,7 +14,7 @@ public class User
 
     public string Password { get; set; } = null!;
 
-    public virtual ICollection<Enrollment> Enrollments { get; set; } = new HashSet<Enrollment>();
-    public virtual ICollection<Progress> Progresses { get; set; } = new HashSet<Progress>();
-    public virtual ICollection<Course> CreatedCourses { get; set; } = new HashSet<Course>();
+    public ICollection<Enrollment> Enrollments { get; set; } = new HashSet<Enrollment>();
+    public ICollection<Progress> Progresses { get; set; } = new HashSet<Progress>();
+    public ICollection<Course> CreatedCourses { get; set; } = new HashSet<Course>();
 }

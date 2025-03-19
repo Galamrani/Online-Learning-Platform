@@ -15,8 +15,8 @@ public class Enrollment
     public DateTime EnrolledAt { get; set; } = DateTime.UtcNow;
 
     [ForeignKey("UserId")]
-    public virtual User User { get; set; } = null!;
+    public User User { get; set; } = null!;
 
     [ForeignKey("CourseId")]
-    public virtual Course Course { get; set; } = null!;
+    public Course Course { get; set; } = null!;
 }

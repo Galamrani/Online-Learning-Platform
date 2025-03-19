@@ -19,6 +19,6 @@ public class Course
     [ForeignKey("CreatorId")]
     public virtual User? Creator { get; set; } = null!;
 
-    public virtual ICollection<Enrollment> Enrollments { get; set; } = new HashSet<Enrollment>();
-    public virtual ICollection<Lesson> Lessons { get; set; } = new HashSet<Lesson>();
+    public ICollection<Enrollment> Enrollments { get; set; } = new HashSet<Enrollment>();
+    public ICollection<Lesson> Lessons { get; set; } = new HashSet<Lesson>();
 }

@@ -15,8 +15,8 @@ public class Progress
     public DateTime LastWatchedAt { get; set; } = DateTime.UtcNow;
 
     [ForeignKey("UserId")]
-    public virtual User User { get; set; } = null!;
+    public User User { get; set; } = null!;
 
     [ForeignKey("LessonId")]
-    public virtual Lesson Lesson { get; set; } = null!;
+    public Lesson Lesson { get; set; } = null!;
 }

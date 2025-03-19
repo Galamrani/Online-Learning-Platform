@@ -17,7 +17,7 @@ public class Lesson
     public string VideoUrl { get; set; } = null!;
 
     [ForeignKey("CourseId")]
-    public virtual Course Course { get; set; } = null!;
+    public Course Course { get; set; } = null!;
 
-    public virtual ICollection<Progress> Progresses { get; set; } = new HashSet<Progress>();
+    public ICollection<Progress> Progresses { get; set; } = new HashSet<Progress>();
 }
