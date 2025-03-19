@@ -22,7 +22,7 @@ import { ProgressModel } from '../models/progress.model';
  * - Maintains **state consistency** with the API through the facade.
  */
 
-enum LocalStorageCourseKey {
+enum CoursesStorageKey {
   CreatedCourses = 'createdCourses',
   EnrolledCourses = 'enrolledCourses',
 }
@@ -30,18 +30,16 @@ enum LocalStorageCourseKey {
 @Injectable({ providedIn: 'root' })
 export class CourseStore {
   private _createdCourses: Map<string, CourseModel> =
-    this.loadFromLocalStorage(LocalStorageCourseKey.CreatedCourses) ||
-    new Map();
+    this.loadFromLocalStorage(CoursesStorageKey.CreatedCourses) || new Map();
   private _enrolledCourses: Map<string, CourseModel> =
-    this.loadFromLocalStorage(LocalStorageCourseKey.EnrolledCourses) ||
-    new Map();
+    this.loadFromLocalStorage(CoursesStorageKey.EnrolledCourses) || new Map();
 
   reset() {
     this._createdCourses.clear();
     this._enrolledCourses.clear();
 
-    localStorage.removeItem(LocalStorageCourseKey.CreatedCourses);
-    localStorage.removeItem(LocalStorageCourseKey.EnrolledCourses);
+    localStorage.removeItem(CoursesStorageKey.CreatedCourses);
+    localStorage.removeItem(CoursesStorageKey.EnrolledCourses);
   }
 
   getCreatedCoursesArray(): CourseModel[] {
@@ -77,7 +75,7 @@ export class CourseStore {
       courses.map((course) => [course.id!, course])
     );
     this.saveToLocalStorage(
-      LocalStorageCourseKey.CreatedCourses,
+      CoursesStorageKey.CreatedCourses,
       this._createdCourses
     );
   }
@@ -87,7 +85,7 @@ export class CourseStore {
       courses.map((course) => [course.id!, course])
     );
     this.saveToLocalStorage(
-      LocalStorageCourseKey.EnrolledCourses,
+      CoursesStorageKey.EnrolledCourses,
       this._enrolledCourses
     );
   }
@@ -98,7 +96,7 @@ export class CourseStore {
     if (this._enrolledCourses.has(course.id)) {
       this._enrolledCourses.set(course.id, course);
       this.saveToLocalStorage(
-        LocalStorageCourseKey.EnrolledCourses,
+        CoursesStorageKey.EnrolledCourses,
         this._enrolledCourses
       );
     }
@@ -108,7 +106,7 @@ export class CourseStore {
     if (!course.id) return;
     this._createdCourses.set(course.id, course);
     this.saveToLocalStorage(
-      LocalStorageCourseKey.CreatedCourses,
+      CoursesStorageKey.CreatedCourses,
       this._createdCourses
     );
   }
@@ -117,7 +115,7 @@ export class CourseStore {
     if (!course.id) return;
     this._enrolledCourses.set(course.id, course);
     this.saveToLocalStorage(
-      LocalStorageCourseKey.EnrolledCourses,
+      CoursesStorageKey.EnrolledCourses,
       this._enrolledCourses
     );
   }
@@ -127,7 +125,7 @@ export class CourseStore {
     this._createdCourses.delete(courseId);
     this._enrolledCourses.delete(courseId);
     this.saveToLocalStorage(
-      LocalStorageCourseKey.CreatedCourses,
+      CoursesStorageKey.CreatedCourses,
       this._createdCourses
     );
   }
@@ -135,7 +133,7 @@ export class CourseStore {
   removeEnrolledCourse(courseId: string) {
     this._enrolledCourses.delete(courseId);
     this.saveToLocalStorage(
-      LocalStorageCourseKey.EnrolledCourses,
+      CoursesStorageKey.EnrolledCourses,
       this._enrolledCourses
     );
   }
@@ -153,7 +151,7 @@ export class CourseStore {
     // Add new lesson
     else course.lessons.push(lesson);
 
-    this.saveUpdatedCourse(course, LocalStorageCourseKey.CreatedCourses);
+    this.saveUpdatedCourse(course, CoursesStorageKey.CreatedCourses);
   }
 
   removeLesson(courseId: string, lessonId: string) {
@@ -161,7 +159,7 @@ export class CourseStore {
     if (!course || !course.lessons) return;
 
     course.lessons = course.lessons.filter((lesson) => lesson.id !== lessonId);
-    this.saveUpdatedCourse(course, LocalStorageCourseKey.CreatedCourses);
+    this.saveUpdatedCourse(course, CoursesStorageKey.CreatedCourses);
   }
 
   pushLessonProgress(
@@ -177,17 +175,17 @@ export class CourseStore {
 
     lesson.progresses.push(progress);
 
-    this.saveUpdatedCourse(course, LocalStorageCourseKey.EnrolledCourses);
+    this.saveUpdatedCourse(course, CoursesStorageKey.EnrolledCourses);
   }
 
   private saveUpdatedCourse(
     course: CourseModel,
-    courseStorageKey: LocalStorageCourseKey
+    courseStorageKey: CoursesStorageKey
   ) {
-    if (courseStorageKey === LocalStorageCourseKey.CreatedCourses) {
+    if (courseStorageKey === CoursesStorageKey.CreatedCourses) {
       this._createdCourses.set(course.id!, course);
       this.saveToLocalStorage(courseStorageKey, this._createdCourses);
-    } else if (courseStorageKey === LocalStorageCourseKey.EnrolledCourses) {
+    } else if (courseStorageKey === CoursesStorageKey.EnrolledCourses) {
       this._enrolledCourses.set(course.id!, course);
       this.saveToLocalStorage(courseStorageKey, this._enrolledCourses);
     }
@@ -199,7 +197,7 @@ export class CourseStore {
       const parsedData = data ? JSON.parse(data) : [];
       return new Map(parsedData);
     } catch (error) {
-      console.error(`Error loading ${key} from localStorage:`, error);
+      console.error(`Error loading ${key} from storage:`, error);
       return new Map();
     }
   }
