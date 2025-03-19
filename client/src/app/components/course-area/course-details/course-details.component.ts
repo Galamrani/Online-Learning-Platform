@@ -9,7 +9,7 @@ import { CourseModel } from '../../../models/course.model';
 import { ViewStore } from '../../../stores/view.store';
 import { CourseViewType } from '../../../models/user-view.enum';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { LessonCardComponent } from '../../lesson-area/lesson-card/lesson-card.component';
+import { LessonCardComponent } from '../lesson-card/lesson-card.component';
 import { ProgressBarComponent } from '../progress-bar/progress-bar.component';
 import { ProgressModel } from '../../../models/progress.model';
 import { UserStore } from '../../../stores/user.store';

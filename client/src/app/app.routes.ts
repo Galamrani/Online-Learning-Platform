@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
 import { HomePageComponent } from './components/page-area/home-page/home-page.component';
 import { NotFoundComponent } from './components/page-area/not-found/not-found.component';
-import { LoginComponent } from './components/user-area/login/login.component';
-import { RegisterComponent } from './components/user-area/register/register.component';
+import { LoginComponent } from './components/forms-area/login/login.component';
+import { RegisterComponent } from './components/forms-area/register/register.component';
 import { authGuard } from './guards/auth.guard';
 import { viewGuard } from './guards/view.guard';
 import { ServerErrorComponent } from './components/page-area/server-error/server-error.component';

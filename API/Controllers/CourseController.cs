@@ -23,7 +23,7 @@ public class CourseController : ControllerBase
     {
         // Retrieves a full course including its lessons and the current user's progress.
 
-        Guid userId = UserIdMiddleware.GetUserId(HttpContext);
+        Guid userId = UserIdHelper.GetUserId(HttpContext);
         CourseDto? course = await _courseService.GetFullCourseAsync(userId, courseId);
         if (course == null) return NotFound(new CourseNoFoundError(courseId));
         return Ok(course);
@@ -53,7 +53,7 @@ public class CourseController : ControllerBase
     {
         // Retrieves courses that the current user is enrolled in, including its lessons and the current user's progress.
 
-        Guid userId = UserIdMiddleware.GetUserId(HttpContext);
+        Guid userId = UserIdHelper.GetUserId(HttpContext);
         return Ok(await _enrollmentService.GetEnrolledCoursesAsync(userId));
     }
 
@@ -63,7 +63,7 @@ public class CourseController : ControllerBase
     {
         // Retrieves courses that the current user has created, with lesson details.
 
-        Guid userId = UserIdMiddleware.GetUserId(HttpContext);
+        Guid userId = UserIdHelper.GetUserId(HttpContext);
         return Ok(await _courseService.GetUserCreatedCoursesAsync(userId));
     }
 
@@ -73,7 +73,7 @@ public class CourseController : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest(new ValidationError(ModelState.GetAllErrors()));
 
-        Guid userId = UserIdMiddleware.GetUserId(HttpContext);
+        Guid userId = UserIdHelper.GetUserId(HttpContext);
         courseDto.CreatorId = userId;
         CourseDto course = await _courseService.AddCourseAsync(courseDto);
         return CreatedAtAction(nameof(GetBasicCourse), new { courseId = course.Id }, course);
@@ -83,7 +83,7 @@ public class CourseController : ControllerBase
     [HttpDelete("{courseId}")]
     public async Task<IActionResult> DeleteCourse([FromRoute] Guid courseId)
     {
-        Guid userId = UserIdMiddleware.GetUserId(HttpContext);
+        Guid userId = UserIdHelper.GetUserId(HttpContext);
         bool isDeleted = await _courseService.DeleteCourseAsync(userId, courseId);
         if (isDeleted) return NoContent();
         return NotFound(new CourseNoFoundError(courseId));
@@ -96,7 +96,7 @@ public class CourseController : ControllerBase
         if (!ModelState.IsValid) return BadRequest(new ValidationError(ModelState.GetAllErrors()));
 
         courseDto.Id = courseId;
-        Guid userId = UserIdMiddleware.GetUserId(HttpContext);
+        Guid userId = UserIdHelper.GetUserId(HttpContext);
         CourseDto? course = await _courseService.UpdateCourseAsync(userId, courseDto);
 
         if (course == null) return NotFound(new CourseNoFoundError(courseId));
@@ -107,7 +107,7 @@ public class CourseController : ControllerBase
     [HttpPost("enroll/{courseId}")]
     public async Task<IActionResult> EnrollToCourse([FromRoute] Guid courseId)
     {
-        Guid userId = UserIdMiddleware.GetUserId(HttpContext);
+        Guid userId = UserIdHelper.GetUserId(HttpContext);
         EnrollmentDto? enrollment = await _enrollmentService.EnrollToCourseAsync(userId, courseId);
 
         if (enrollment == null) return BadRequest(new EnrollmentExistsError(userId, courseId));
@@ -122,7 +122,7 @@ public class CourseController : ControllerBase
     [HttpDelete("unenroll/{courseId}")]
     public async Task<IActionResult> UnenrollToCourse([FromRoute] Guid courseId)
     {
-        Guid userId = UserIdMiddleware.GetUserId(HttpContext);
+        Guid userId = UserIdHelper.GetUserId(HttpContext);
         bool isUnenrolled = await _enrollmentService.UnenrollToCourseAsync(userId, courseId);
         if (isUnenrolled) return NoContent();
         return NotFound(new EnrollmentNoFoundError(userId, courseId));

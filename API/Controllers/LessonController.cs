@@ -37,7 +37,7 @@ public class LessonController : ControllerBase
         if (!ModelState.IsValid) return BadRequest(new ValidationError(ModelState.GetAllErrors()));
 
         lessonDto.CourseId = courseId;
-        Guid userId = UserIdMiddleware.GetUserId(HttpContext);
+        Guid userId = UserIdHelper.GetUserId(HttpContext);
 
         LessonDto? lesson = await _lessonService.AddLessonAsync(userId, lessonDto);
         if (lesson == null) return NotFound(new CourseNoFoundError(lessonDto.CourseId));
@@ -49,7 +49,7 @@ public class LessonController : ControllerBase
     [HttpDelete("{lessonId}")]
     public async Task<IActionResult> DeleteLesson([FromRoute] Guid lessonId)
     {
-        Guid userId = UserIdMiddleware.GetUserId(HttpContext);
+        Guid userId = UserIdHelper.GetUserId(HttpContext);
         bool isDeleted = await _lessonService.DeleteLessonAsync(userId, lessonId);
         if (isDeleted) return NoContent();
         return NotFound(new LessonNoFoundError(lessonId));
@@ -62,7 +62,7 @@ public class LessonController : ControllerBase
         if (!ModelState.IsValid) return BadRequest(new ValidationError(ModelState.GetAllErrors()));
 
         lessonDto.Id = lessonId;
-        Guid userId = UserIdMiddleware.GetUserId(HttpContext);
+        Guid userId = UserIdHelper.GetUserId(HttpContext);
         LessonDto? lesson = await _lessonService.UpdateLessonAsync(userId, lessonDto);
         if (lesson == null) return NotFound(new LessonNoFoundError(lessonId));
         return Ok(lesson);

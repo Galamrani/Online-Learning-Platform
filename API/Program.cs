@@ -62,7 +62,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<LoggingMiddleware>();
-app.UseMiddleware<UserIdMiddleware>();
 
 
 app.MapControllers();
