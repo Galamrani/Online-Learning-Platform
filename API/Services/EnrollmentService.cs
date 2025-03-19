@@ -1,47 +1,62 @@
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace OnlineLearning.API;
 
-public class EnrollmentService
+public class EnrollmentService(LearningPlatformDbContext _dbContext, IMapper _mapper) : IEnrollmentService
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
 
-    public EnrollmentService(IUnitOfWork unitOfWork, IMapper mapper)
+    public async Task<List<CourseDto>> GetEnrolledCoursesAsync(Guid userId)
     {
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-    }
+        List<Course> courses = await _dbContext.Enrollments
+            .Where(e => e.UserId == userId)
+            .Include(e => e.Course)
+            .ThenInclude(c => c.Lessons)
+            .ThenInclude(l => l.Progresses)
+            .AsNoTracking()
+            .Select(e => e.Course)
+            .ToListAsync();
 
-
-    public async Task<List<CourseDto>> GetEnrolledCoursesAsync(Guid userId) //
-    {
-        List<Course> courses = await _unitOfWork.Enrollments.GetEnrolledCoursesAsync(userId);
         return _mapper.Map<List<CourseDto>>(courses);
     }
 
-    public async Task<EnrollmentDto?> EnrollToCourseAsync(Guid userId, Guid courseId) //
+    public async Task<bool> EnrollToCourseAsync(Guid userId, Guid courseId)
     {
-        if (await _unitOfWork.Enrollments.IsEnrollmentExists(userId, courseId)) return null;
+        if (await IsUserEnrolledAsync(userId, courseId))
+        {
+            return false;
+        }
 
         Enrollment enrollment = new Enrollment() { UserId = userId, CourseId = courseId };
 
-        Enrollment dbEnrollment = await _unitOfWork.Enrollments.EnrollToCourseAsync(enrollment);
+        await _dbContext.Enrollments.AddAsync(enrollment);
 
-        await _unitOfWork.SaveChangesAsync();
-
-        return _mapper.Map<EnrollmentDto>(dbEnrollment);
+        return await _dbContext.SaveChangesAsync() > 0;
     }
 
-    public async Task<bool> UnenrollToCourseAsync(Guid userId, Guid courseId) //
+    public async Task<bool> UnenrollToCourseAsync(Guid userId, Guid courseId)
     {
-        Enrollment? enrollment = await _unitOfWork.Enrollments.GetEnrollmentAsync(userId, courseId);
+        Enrollment? enrollment = await GetEnrollmentAsync(userId, courseId);
         if (enrollment == null) return false;
 
+        _dbContext.Enrollments.Remove(enrollment);
 
-        await _unitOfWork.Enrollments.UnenrollToCourseAsync(enrollment);
-
-        return await _unitOfWork.SaveChangesAsync() > 0;
+        return await _dbContext.SaveChangesAsync() > 0;
     }
 
+    //
+
+    private async Task<bool> IsUserEnrolledAsync(Guid userId, Guid courseId)
+    {
+        return await _dbContext.Enrollments
+            .AsNoTracking()
+            .AnyAsync(e => e.UserId == userId && e.CourseId == courseId);
+    }
+
+    private async Task<Enrollment?> GetEnrollmentAsync(Guid userId, Guid courseId)
+    {
+        return await _dbContext.Enrollments
+            .AsNoTracking()
+            .SingleOrDefaultAsync(e => e.UserId == userId && e.CourseId == courseId);
+    }
 }

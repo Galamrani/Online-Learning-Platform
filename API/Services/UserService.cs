@@ -1,22 +1,17 @@
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace OnlineLearning.API;
 
-public class UserService
+public class UserService(LearningPlatformDbContext _dbContext) : IUserService
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
 
-    public UserService(IUnitOfWork unitOfWork, IMapper mapper)
+    public async Task<string?> RegisterAsync(RegisterDto registerDto)
     {
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-    }
-
-
-    public async Task<string?> RegisterAsync(RegisterDto registerDto) //
-    {
-        if (await _unitOfWork.Users.IsEmailExists(registerDto.Email)) return null;
+        if (await IsEmailExists(registerDto.Email))
+        {
+            return null;
+        }
 
         User user = new User()
         {
@@ -25,18 +20,30 @@ public class UserService
             Password = Cyber.HashPassword(registerDto.Password)
         };
 
-        User dbUser = await _unitOfWork.Users.AddUserAsync(user);
-        await _unitOfWork.SaveChangesAsync();
-
-        return JwtHelper.GetNewToken(dbUser);
-    }
-
-    public async Task<string?> LoginAsync(CredentialsDto credentialsDto) //
-    {
-        User? user = await _unitOfWork.Users.GetUserByEmailAsync(credentialsDto.Email.ToLower());
-
-        if (user == null || user.Password != Cyber.HashPassword(credentialsDto.Password)) return null;
+        await _dbContext.Users.AddAsync(user);
+        await _dbContext.SaveChangesAsync();
 
         return JwtHelper.GetNewToken(user);
+    }
+
+    public async Task<string?> LoginAsync(CredentialsDto credentialsDto)
+    {
+        User? user = await _dbContext.Users
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.Email == credentialsDto.Email.ToLower());
+
+        if (user == null || user.Password != Cyber.HashPassword(credentialsDto.Password))
+        {
+            return null;
+        }
+
+        return JwtHelper.GetNewToken(user);
+    }
+
+    //
+
+    private async Task<bool> IsEmailExists(string email)
+    {
+        return await _dbContext.Users.AsNoTracking().AnyAsync(u => u.Email == email.ToLower());
     }
 }

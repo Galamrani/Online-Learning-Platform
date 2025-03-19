@@ -1,69 +1,88 @@
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace OnlineLearning.API;
 
-public class LessonService
+public class LessonService(LearningPlatformDbContext _dbContext, IMapper _mapper) : ILessonService
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
 
-    public LessonService(IUnitOfWork unitOfWork, IMapper mapper)
+    public async Task<LessonDto?> AddLessonAsync(Guid userId, LessonDto lessonDto)
     {
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-    }
-
-    public async Task<LessonDto?> AddLessonAsync(Guid userId, LessonDto lessonDto) //
-    {
-        if (!await _unitOfWork.Courses.IsCourseExistsAsync(lessonDto.CourseId)) return null;
-
-        if (!await _unitOfWork.Courses.IsCreatorByCourseIdAsync(userId, lessonDto.CourseId)) throw new UnauthorizedAccessException("You are not allowed to add lesson to this course, your not the creator.");
+        if (!await IsUserCourseCreatorAsync(userId, lessonDto.CourseId))
+        {
+            throw new UnauthorizedAccessException("You are not allowed to add lesson to this course, your not the creator.");
+        }
 
         Lesson lesson = _mapper.Map<Lesson>(lessonDto);
-        Lesson dbLesson = await _unitOfWork.Lessons.AddLessonAsync(lesson);
+        await _dbContext.Lessons.AddAsync(lesson);
+        await _dbContext.SaveChangesAsync();
 
-        await _unitOfWork.SaveChangesAsync();
-
-        return _mapper.Map<LessonDto>(dbLesson);
+        return _mapper.Map<LessonDto>(lesson);
     }
 
-    public async Task<ProgressDto?> AddProgressAsync(ProgressDto progressDto) //
+    public async Task<bool> AddProgressAsync(ProgressDto progressDto)
     {
-        if (!await _unitOfWork.Lessons.IsLessonExistsAsync(progressDto.LessonId)) return null;
-
-        if (!await _unitOfWork.Enrollments.IsEnrollmentExistsByLessonId(progressDto.UserId, progressDto.LessonId)) throw new UnauthorizedAccessException("You are not allowed to add progress to this lesson, your not the enrolled to it.");
+        if (!await IsUserEnrolledToCourseByLessonIdAsync(progressDto.UserId, progressDto.LessonId))
+        {
+            throw new UnauthorizedAccessException("You are not allowed to add progress to this lesson, your not the enrolled to it.");
+        }
 
         Progress progress = _mapper.Map<Progress>(progressDto);
-        Progress dbProgress = await _unitOfWork.Progresses.AddProgressAsync(progress);
+        await _dbContext.Progresses.AddAsync(progress);
 
-        await _unitOfWork.SaveChangesAsync();
-
-        return _mapper.Map<ProgressDto>(dbProgress);
+        return await _dbContext.SaveChangesAsync() > 0;
     }
 
-    public async Task<bool> DeleteLessonAsync(Guid userId, Guid lessonId) //
+    public async Task<bool> DeleteLessonAsync(Guid userId, Guid lessonId)
     {
-        Lesson? lesson = await _unitOfWork.Lessons.GetLessonAsync(lessonId);
+        Lesson? lesson = await GetLessonByIdAsync(lessonId);
         if (lesson == null) return false;
 
-        if (!await _unitOfWork.Lessons.IsCreatorByLessonIdAsync(userId, lesson.Id)) throw new UnauthorizedAccessException("You are not allowed to delete this lesson, your not the creator of the course.");
+        if (!await IsUserCourseCreatorAsync(userId, lesson.CourseId))
+        {
+            throw new UnauthorizedAccessException("You are not allowed to delete this lesson, your not the creator of the course.");
+        }
 
-        await _unitOfWork.Lessons.DeleteLessonAsync(lesson);
-        return await _unitOfWork.SaveChangesAsync() > 0;
+        _dbContext.Lessons.Remove(lesson);
+        return await _dbContext.SaveChangesAsync() > 0;
     }
 
-    public async Task<LessonDto?> UpdateLessonAsync(Guid userId, LessonDto lessonDto) //
+    public async Task<LessonDto?> UpdateLessonAsync(Guid userId, LessonDto lessonDto)
     {
-        Lesson? oldLesson = await _unitOfWork.Lessons.GetLessonAsync(lessonDto.Id);
-        if (oldLesson == null) return null;
+        Lesson? lesson = await GetLessonByIdAsync(lessonDto.Id);
+        if (lesson == null) return null;
 
-        if (!await _unitOfWork.Lessons.IsCreatorByLessonIdAsync(userId, oldLesson.Id)) throw new UnauthorizedAccessException("You are not allowed to update this lesson, your not the creator of the course.");
+        if (!await IsUserCourseCreatorAsync(userId, lesson.CourseId))
+        {
+            throw new UnauthorizedAccessException("You are not allowed to delete this lesson, your not the creator of the course.");
+        }
 
-        Lesson lesson = _mapper.Map<Lesson>(lessonDto);
-        Lesson newLesson = await _unitOfWork.Lessons.UpdateLessonAsync(lesson, oldLesson);
-        await _unitOfWork.SaveChangesAsync();
+        _mapper.Map(lessonDto, lesson);
+        await _dbContext.SaveChangesAsync();
 
-        return _mapper.Map<LessonDto>(newLesson);
+        return _mapper.Map<LessonDto>(lesson);
+    }
+
+    //
+
+    private async Task<Lesson?> GetLessonByIdAsync(Guid lessonId)
+    {
+        return await _dbContext.Lessons
+            .FirstOrDefaultAsync(l => l.Id == lessonId);
+    }
+
+    private async Task<bool> IsUserCourseCreatorAsync(Guid userId, Guid courseId)
+    {
+        return await _dbContext.Courses
+            .AsNoTracking()
+            .AnyAsync(c => c.Id == courseId && c.CreatorId == userId);
+    }
+
+    private async Task<bool> IsUserEnrolledToCourseByLessonIdAsync(Guid userId, Guid lessonId)
+    {
+        return await _dbContext.Enrollments
+            .AsNoTracking()
+            .AnyAsync(e => e.UserId == userId && e.Course.Lessons.Any(l => l.Id == lessonId));
     }
 
 }

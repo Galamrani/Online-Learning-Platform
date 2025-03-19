@@ -15,7 +15,7 @@ export const environment = {
 
   // Lesson Controller
   baseLessonsUrl: 'http://localhost:5010/api/lessons/',
-  addLessonProgressUrl: 'http://localhost:5010/api/lessons/add-progress/', // ==> {lessonId}
+  addLessonProgressUrl: 'http://localhost:5010/api/lessons/progress/', // ==> {lessonId}
 
   // User Controller
   userRegisterUrl: 'http://localhost:5010/api/users/register',

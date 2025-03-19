@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace OnlineLearning.API;
@@ -6,16 +5,8 @@ namespace OnlineLearning.API;
 
 [Route("api/users")]
 [ApiController]
-public class UserController : ControllerBase
+public class UserController(IUserService _userService) : ControllerBase
 {
-    private readonly UserService _userService;
-
-
-    public UserController(UserService userService)
-    {
-        _userService = userService;
-    }
-
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
