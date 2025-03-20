@@ -4,7 +4,7 @@ using System.Text;
 
 namespace OnlineLearning.API;
 
-public class Cyber
+public class PasswordHasher
 {
     // Hash with salting: 
     public static string HashPassword(string plainText)

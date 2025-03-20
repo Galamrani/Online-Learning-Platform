@@ -176,7 +176,7 @@ public class SeedData
             Id = _guids[userKey],
             Name = name,
             Email = email,
-            Password = Cyber.HashPassword(password)
+            Password = PasswordHasher.HashPassword(password)
         };
     }
 

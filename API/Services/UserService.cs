@@ -1,10 +1,17 @@
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace OnlineLearning.API;
 
-public class UserService(LearningPlatformDbContext _dbContext) : IUserService
+public class UserService : IUserService
 {
+    private readonly LearningPlatformDbContext _dbContext;
+    private readonly IJwtService _jwtService;
+
+    public UserService(LearningPlatformDbContext dbContext, IJwtService jwtService)
+    {
+        _dbContext = dbContext;
+        _jwtService = jwtService;
+    }
 
     public async Task<string?> RegisterAsync(RegisterDto registerDto)
     {
@@ -17,13 +24,14 @@ public class UserService(LearningPlatformDbContext _dbContext) : IUserService
         {
             Name = registerDto.Name,
             Email = registerDto.Email.ToLower(),
-            Password = Cyber.HashPassword(registerDto.Password)
+            Password = PasswordHasher.HashPassword(registerDto.Password)
         };
 
         await _dbContext.Users.AddAsync(user);
         await _dbContext.SaveChangesAsync();
 
-        return JwtHelper.GetNewToken(user);
+        return _jwtService.GenerateToken(user);
+        // return JwtHelper.GetNewToken(user);
     }
 
     public async Task<string?> LoginAsync(CredentialsDto credentialsDto)
@@ -32,12 +40,13 @@ public class UserService(LearningPlatformDbContext _dbContext) : IUserService
             .AsNoTracking()
             .SingleOrDefaultAsync(u => u.Email == credentialsDto.Email.ToLower());
 
-        if (user == null || user.Password != Cyber.HashPassword(credentialsDto.Password))
+        if (user == null || user.Password != PasswordHasher.HashPassword(credentialsDto.Password))
         {
             return null;
         }
 
-        return JwtHelper.GetNewToken(user);
+        return _jwtService.GenerateToken(user);
+        // return JwtHelper.GetNewToken(user);
     }
 
     //

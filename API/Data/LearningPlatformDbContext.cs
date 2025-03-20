@@ -1,18 +1,26 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace OnlineLearning.API;
 
 public class LearningPlatformDbContext : DbContext
 {
+    private readonly DatabaseSettings _databaseSettings;
+
     public DbSet<User> Users { get; set; }
     public DbSet<Course> Courses { get; set; }
     public DbSet<Lesson> Lessons { get; set; }
     public DbSet<Progress> Progresses { get; set; }
     public DbSet<Enrollment> Enrollments { get; set; }
 
+    public LearningPlatformDbContext(IOptions<DatabaseSettings> databaseSettings)
+    {
+        _databaseSettings = databaseSettings.Value;
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(AppConfig.ConnectionString);
+        optionsBuilder.UseSqlServer(_databaseSettings.GetConnectionString());
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

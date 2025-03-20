@@ -3,8 +3,16 @@ using AutoMapper;
 
 namespace OnlineLearning.API;
 
-public class CourseService(LearningPlatformDbContext _dbContext, IMapper _mapper) : ICourseService
+public class CourseService : ICourseService
 {
+    private readonly LearningPlatformDbContext _dbContext;
+    private readonly IMapper _mapper;
+
+    public CourseService(LearningPlatformDbContext dbContext, IMapper mapper)
+    {
+        _dbContext = dbContext;
+        _mapper = mapper;
+    }
 
     public async Task<List<CourseDto>> GetCoursesAsync()
     {

@@ -3,8 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace OnlineLearning.API;
 
-public class EnrollmentService(LearningPlatformDbContext _dbContext, IMapper _mapper) : IEnrollmentService
+public class EnrollmentService : IEnrollmentService
 {
+    private readonly LearningPlatformDbContext _dbContext;
+    private readonly IMapper _mapper;
+
+    public EnrollmentService(LearningPlatformDbContext dbContext, IMapper mapper)
+    {
+        _dbContext = dbContext;
+        _mapper = mapper;
+    }
 
     public async Task<List<CourseDto>> GetEnrolledCoursesAsync(Guid userId)
     {

@@ -13,9 +13,17 @@ public class LoggingMiddleware
 
     public async Task Invoke(HttpContext context)
     {
-        Log.Information("Request: {Method} {Path}", context.Request.Method, context.Request.Path);
+        Log.Information("Request: {Method} {Path} from {IP}",
+             context.Request.Method,
+             context.Request.Path,
+             context.Connection.RemoteIpAddress);
+
         await _next(context);
-        Log.Information("Response: {StatusCode}", context.Response.StatusCode);
+
+        Log.Information("Response: {StatusCode} for {Method} {Path}",
+            context.Response.StatusCode,
+            context.Request.Method,
+            context.Request.Path);
     }
 }
 

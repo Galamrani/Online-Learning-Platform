@@ -125,8 +125,8 @@ export class CourseManagerService {
 
   updateLesson(courseId: string, lesson: LessonModel): Observable<LessonModel> {
     return this.lessonApiService.updateLesson(lesson).pipe(
-      tap(() => {
-        this.courseStore.pushLesson(courseId, lesson);
+      tap((updatedLesson) => {
+        this.courseStore.pushLesson(courseId, updatedLesson);
         this.coursesSubject.next(this.courseStore.getCreatedCoursesArray());
       })
     );

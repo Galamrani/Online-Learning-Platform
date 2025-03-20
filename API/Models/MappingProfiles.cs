@@ -6,9 +6,11 @@ public class MappingProfiles : Profile
 {
     public MappingProfiles()
     {
-        // Configure global null handling
+        // If object is null it will be mapped to null
         AllowNullDestinationValues = true;
-        AllowNullCollections = true;
+
+        // If a collection in null it will be mapped to []
+        AllowNullCollections = false;
 
         CreateMap<User, UserDto>();
         CreateMap<UserDto, User>();

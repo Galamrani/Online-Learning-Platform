@@ -131,6 +131,7 @@ export class CourseStore {
 
   pushLesson(courseId: string, lesson: LessonModel) {
     const course = this._createdCourses.get(courseId);
+    console.log(course); // to delete
     if (!course || !course.lessons) {
       return;
     }

@@ -56,8 +56,19 @@ export class UserService {
           })
         )
       );
-      const payload = jwtDecode<{ userData: string }>(token);
-      const userData: UserModel = JSON.parse(payload.userData);
+      const payload = jwtDecode<{
+        nameid: string;
+        email: string;
+        unique_name: string;
+      }>(token);
+
+      // Create UserModel based on the decoded token
+      const userData: UserModel = {
+        id: payload.nameid,
+        name: payload.unique_name,
+        email: payload.email,
+        password: undefined, // Password is not stored in the userStore
+      };
 
       this.userStore.setUser(userData);
       localStorage.setItem('token', token);

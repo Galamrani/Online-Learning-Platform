@@ -11,6 +11,8 @@ import { Router } from '@angular/router';
 import { UserModel } from '../../../models/user.model';
 import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
+import { ViewStore } from '../../../stores/view.store';
+import { CourseViewType } from '../../../models/user-view.enum';
 
 @Component({
   selector: 'app-register',
@@ -25,6 +27,7 @@ export class RegisterComponent {
   constructor(
     private formBuilder: FormBuilder,
     private userService: UserService,
+    private viewStore: ViewStore,
     private router: Router,
     private toastr: ToastrService
   ) {}
@@ -63,7 +66,8 @@ export class RegisterComponent {
         `Welcome, ${user.name || 'User'}!`,
         'Registration Successful'
       );
-      this.router.navigateByUrl('/courses/default');
+      this.viewStore.setView(CourseViewType.Student);
+      this.router.navigateByUrl('/courses/student');
     } catch (err: any) {
       this.toastr.error('Register failed!');
     }

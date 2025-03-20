@@ -70,7 +70,7 @@ public class CourseController(ICourseService _courseService, IEnrollmentService 
 
         CourseDto course = await _courseService.AddCourseAsync(courseDto);
 
-        return CreatedAtAction(nameof(GetBasicCourse), new { courseId = course.Id }, course);
+        return CreatedAtAction(nameof(GetFullCourse), new { courseId = course.Id }, course);
     }
 
     [Authorize]
@@ -111,7 +111,7 @@ public class CourseController(ICourseService _courseService, IEnrollmentService 
             return BadRequest(new EnrollmentExistsError(UserIdHelper.GetUserId(HttpContext), courseId));
         }
 
-        return Created(string.Empty, null);
+        return CreatedAtAction(nameof(GetFullCourse), new { courseId = course.Id }, course);
     }
 
     [Authorize]

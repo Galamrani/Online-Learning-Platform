@@ -1,74 +1,46 @@
-using System.Text.Json.Serialization;
-using FluentValidation;
-using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc;
 using OnlineLearning.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
-AppConfig.Config(builder.Environment);
+// Load configuration settings (e.g., JWT, Database)
+builder.Services.AddApplicationConfigurations(builder.Configuration);
 
-builder.AddSerilog();
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll",
-        policy => policy.AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod());
-});
+// Configure Serilog for logging
+builder.AddSerilogLogging();
 
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssemblyContaining<CourseDtoValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<RegisterDtoValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<LessonDtoValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<ProgressDtoValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<CredentialsDtoValidator>();
+// Enable CORS policy for development
+builder.Services.AddCorsPolicy();
 
+// Configure FluentValidation for request validation
+builder.Services.AddFluentValidationServices();
 
-builder.Services.AddDbContext<LearningPlatformDbContext>();
-// builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-// builder.Services.AddScoped<IUserRepository, UserRepository>();
-// builder.Services.AddScoped<ICourseRepository, CourseRepository>();
-// builder.Services.AddScoped<ILessonRepository, LessonRepository>();
-// builder.Services.AddScoped<IProgressRepository, ProgressRepository>();
-// builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ICourseService, CourseService>();
-builder.Services.AddScoped<ILessonService, LessonService>();
-builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+// Register application services (e.g., UserService, CourseService)
+builder.Services.AddApplicationServices();
 
-// builder.Services.AddScoped<UserService>();
-// builder.Services.AddScoped<CourseService>();
-// builder.Services.AddScoped<EnrollmentService>();
-// builder.Services.AddScoped<LessonService>();
-
+// Configure AutoMapper for DTO and entity mapping
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
-builder.Services.AddMvc(options =>
-{
-    options.Filters.Add<UnauthorizedActionFilter>(order: 1);
-    options.Filters.Add<CatchAllFilter>(order: 2);
-});
+// Add MVC filters (CatchAllFilter for handling exceptions)
+builder.Services.AddMvc(options => options.Filters.Add<CatchAllFilter>());
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(JwtHelper.SetBearerOptions); // Use JWT as the authentication mechanism.
-builder.Services.AddControllers()
-    .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
-    .AddJsonOptions(options => options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull);
-builder.Services.AddHttpContextAccessor();
+// Configure JWT authentication & authorization
+builder.Services.AddJwtAuthentication(builder.Configuration);
 
+// Configure JSON serialization settings on the controllers
+builder.Services.AddControllers().AddJsonConfiguration();
 
 var app = builder.Build();
-app.UseCors("AllowAll");
+
+app.UseCors("DevelopmentCorsPolicy");
 
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.UseMiddleware<LoggingMiddleware>();
 
-
 app.MapControllers();
+
 
 app.Run();
 

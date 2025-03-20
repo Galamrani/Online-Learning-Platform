@@ -11,6 +11,8 @@ import { CredentialsModel } from '../../../models/credentials.model';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
+import { ViewStore } from '../../../stores/view.store';
+import { CourseViewType } from '../../../models/user-view.enum';
 
 @Component({
   selector: 'app-login',
@@ -25,6 +27,7 @@ export class LoginComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private userService: UserService,
+    private viewStore: ViewStore,
     private router: Router,
     private toastr: ToastrService
   ) {}
@@ -52,7 +55,8 @@ export class LoginComponent implements OnInit {
       const credentials: CredentialsModel = this.credentialsForm.value;
       await this.userService.login(credentials);
       this.toastr.success('Welcome back!');
-      this.router.navigateByUrl('/courses/default');
+      this.viewStore.setView(CourseViewType.Student);
+      this.router.navigateByUrl('/courses/student');
     } catch (err: any) {
       this.toastr.error('Login failed!');
     }

@@ -3,8 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace OnlineLearning.API;
 
-public class LessonService(LearningPlatformDbContext _dbContext, IMapper _mapper) : ILessonService
+public class LessonService : ILessonService
 {
+    private readonly LearningPlatformDbContext _dbContext;
+    private readonly IMapper _mapper;
+
+    public LessonService(LearningPlatformDbContext dbContext, IMapper mapper)
+    {
+        _dbContext = dbContext;
+        _mapper = mapper;
+    }
 
     public async Task<LessonDto?> AddLessonAsync(Guid userId, LessonDto lessonDto)
     {
