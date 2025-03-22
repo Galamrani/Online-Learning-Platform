@@ -6,15 +6,24 @@ namespace OnlineLearning.API;
 
 [Route("api/courses")]
 [ApiController]
-public class CourseController(ICourseService _courseService, IEnrollmentService _enrollmentService) : ControllerBase
+public class CourseController : ControllerBase
 {
+    private readonly ICourseService _courseService;
+    private readonly IEnrollmentService _enrollmentService;
+
+    public CourseController(ICourseService courseService, IEnrollmentService enrollmentService)
+    {
+        _courseService = courseService;
+        _enrollmentService = enrollmentService;
+    }
 
     [HttpGet]
     public async Task<IActionResult> GetCourses()
     {
         // Retrieves all available courses, each containing only lesson data.
 
-        return Ok(await _courseService.GetCoursesAsync());
+        List<CourseDto> courses = await _courseService.GetCoursesAsync();
+        return Ok(courses);
     }
 
     [HttpGet("{courseId}")]
@@ -34,9 +43,7 @@ public class CourseController(ICourseService _courseService, IEnrollmentService 
         // Retrieves a full course including its lessons and the current user's progress.
 
         CourseDto? course = await _courseService.GetFullCourseAsync(UserIdHelper.GetUserId(HttpContext), courseId);
-
         if (course == null) return NotFound(new CourseNoFoundError(courseId));
-
         return Ok(course);
     }
 
@@ -46,7 +53,8 @@ public class CourseController(ICourseService _courseService, IEnrollmentService 
     {
         // Retrieves courses that the current user is enrolled to, including its lessons and the current user's progress.
 
-        return Ok(await _enrollmentService.GetEnrolledCoursesAsync(UserIdHelper.GetUserId(HttpContext)));
+        List<CourseDto> courses = await _enrollmentService.GetEnrolledCoursesAsync(UserIdHelper.GetUserId(HttpContext));
+        return Ok(courses);
     }
 
     [Authorize]
@@ -55,10 +63,9 @@ public class CourseController(ICourseService _courseService, IEnrollmentService 
     {
         // Retrieves courses that the current user has created, with lesson details.
 
-        return Ok(await _courseService.GetUserCreatedCoursesAsync(UserIdHelper.GetUserId(HttpContext)));
+        List<CourseDto> courses = await _courseService.GetUserCreatedCoursesAsync(UserIdHelper.GetUserId(HttpContext));
+        return Ok(courses);
     }
-
-    //
 
     [Authorize]
     [HttpPost]

@@ -22,7 +22,11 @@ import { RouterModule } from '@angular/router';
 export class LessonCardComponent {
   lesson = input.required<LessonModel>();
   deleteLessonClicked = output<{ courseId: string; lessonId: string }>();
-  videoClicked = output<{ courseId: string; lessonId: string }>();
+  videoClicked = output<{
+    isStudent: boolean;
+    courseId: string;
+    lessonId: string;
+  }>();
   CourseViewType = CourseViewType;
 
   videoService = inject(VideoService);
@@ -42,6 +46,7 @@ export class LessonCardComponent {
 
   handleVideoClick() {
     this.videoClicked.emit({
+      isStudent: this.viewStore.view() === CourseViewType.Student,
       courseId: this.lesson().courseId,
       lessonId: this.lesson().id!,
     });

@@ -5,8 +5,14 @@ namespace OnlineLearning.API;
 
 [Route("api/users")]
 [ApiController]
-public class UserController(IUserService _userService) : ControllerBase
+public class UserController : ControllerBase
 {
+    private readonly IUserService _userService;
+
+    public UserController(IUserService userService)
+    {
+        _userService = userService;
+    }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)

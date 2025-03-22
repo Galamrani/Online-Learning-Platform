@@ -5,8 +5,14 @@ namespace OnlineLearning.API;
 
 [Route("api/lessons")]
 [ApiController]
-public class LessonController(ILessonService _lessonService) : ControllerBase
+public class LessonController : ControllerBase
 {
+    private readonly ILessonService _lessonService;
+
+    public LessonController(ILessonService lessonService)
+    {
+        _lessonService = lessonService;
+    }
 
     [Authorize]
     [HttpPost("progress/{lessonId}")]

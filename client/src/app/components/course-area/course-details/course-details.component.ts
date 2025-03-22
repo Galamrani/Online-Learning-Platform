@@ -57,7 +57,18 @@ export class CourseDetailsComponent implements OnInit {
       });
   }
 
-  onWatchedVideo(event: { courseId: string; lessonId: string }) {
+  onWatchedVideo(event: {
+    isStudent: boolean;
+    courseId: string;
+    lessonId: string;
+  }) {
+    if (!event.isStudent) {
+      this.toastr.warning(
+        'Progress could not be saved. Please enroll in the course first and watch it in student view.'
+      );
+      return;
+    }
+
     const progress: ProgressModel = {
       userId: this.userStore.getUserId()!,
       lessonId: event.lessonId,
