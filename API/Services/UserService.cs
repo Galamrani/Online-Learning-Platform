@@ -31,7 +31,6 @@ public class UserService : IUserService
         await _dbContext.SaveChangesAsync();
 
         return _jwtService.GenerateToken(user);
-        // return JwtHelper.GetNewToken(user);
     }
 
     public async Task<string?> LoginAsync(CredentialsDto credentialsDto)
@@ -46,10 +45,7 @@ public class UserService : IUserService
         }
 
         return _jwtService.GenerateToken(user);
-        // return JwtHelper.GetNewToken(user);
     }
-
-    //
 
     private async Task<bool> IsEmailExists(string email)
     {

@@ -12,7 +12,7 @@ public class Progress
 
     public Guid LessonId { get; set; }
 
-    public DateTime LastWatchedAt { get; set; } = DateTime.UtcNow;
+    public DateTime LastWatchedAt { get; set; }
 
     [ForeignKey("UserId")]
     public User User { get; set; } = null!;

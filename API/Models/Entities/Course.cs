@@ -14,7 +14,7 @@ public class Course
 
     public string? Description { get; set; }
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; }
 
     [ForeignKey("CreatorId")]
     public virtual User? Creator { get; set; } = null!;

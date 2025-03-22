@@ -8,6 +8,9 @@ builder.Services.AddApplicationConfigurations(builder.Configuration);
 // Configure Serilog for logging
 builder.AddSerilogLogging();
 
+// Registers the application's DbContext 
+builder.AddDbContext();
+
 // Enable CORS policy for development
 builder.Services.AddCorsPolicy();
 
@@ -15,7 +18,7 @@ builder.Services.AddCorsPolicy();
 builder.Services.AddFluentValidationServices();
 
 // Register application services (e.g., UserService, CourseService)
-builder.Services.AddApplicationServices();
+builder.Services.AddApplicationServices(builder);
 
 // Configure AutoMapper for DTO and entity mapping
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

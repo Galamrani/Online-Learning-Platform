@@ -7,7 +7,6 @@ import {
 import { NavbarComponent } from '../navbar/navbar.component';
 import { FooterComponent } from '../footer/footer.component';
 import { RouterOutlet } from '@angular/router';
-import { UserStore } from '../../../stores/user.store';
 import { ViewStore } from '../../../stores/view.store';
 import { CourseViewType } from '../../../models/user-view.enum';
 

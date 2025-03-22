@@ -12,7 +12,7 @@ public class Enrollment
 
     public Guid CourseId { get; set; }
 
-    public DateTime EnrolledAt { get; set; } = DateTime.UtcNow;
+    public DateTime EnrolledAt { get; set; }
 
     [ForeignKey("UserId")]
     public User User { get; set; } = null!;
