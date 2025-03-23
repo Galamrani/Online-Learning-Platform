@@ -1,9 +1,13 @@
-import { Injectable, Signal, signal, effect } from '@angular/core';
+import { Injectable, Signal, signal, effect, computed } from '@angular/core';
 import { UserModel } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserStore {
   private _user = signal<UserModel | null>(this.loadUserFromLocalStorage()); // Load from local storage
+
+  isLoggedIn = computed(() => this._user() !== null);
+  getUserName = computed(() => this._user()?.name);
+  getUserId = computed(() => this._user()?.id);
 
   constructor() {
     // Automatically sync user state to local storage when updated
@@ -23,18 +27,6 @@ export class UserStore {
   clearUser() {
     this._user.set(null);
     localStorage.removeItem('user');
-  }
-
-  isLoggedIn(): boolean {
-    return this._user() !== null;
-  }
-
-  getUserName(): string | undefined {
-    return this._user()?.name;
-  }
-
-  getUserId(): string | undefined {
-    return this._user()?.id;
   }
 
   private loadUserFromLocalStorage(): UserModel | null {
