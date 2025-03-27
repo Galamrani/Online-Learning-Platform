@@ -62,7 +62,7 @@ export class AddCourseComponent implements OnInit {
     this.CourseManagerService.addCourse(course).subscribe({
       next: () => {
         this.toastr.success('Course has been successfully added!');
-        this.router.navigate(['courses', 'default']);
+        this.router.navigate(['courses', 'instructor']);
       },
       error: () =>
         this.toastr.error('Failed to add the course. Please try again.'),

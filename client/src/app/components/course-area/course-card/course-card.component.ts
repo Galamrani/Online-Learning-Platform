@@ -45,13 +45,13 @@ export class CourseCardComponent implements OnInit {
   }
 
   handleUnenroll() {
-    this.unenrollCourseClicked.emit(this.course().id!);
     this.isEnrolled.set(false);
+    this.unenrollCourseClicked.emit(this.course().id!);
   }
 
   handleEnroll() {
-    this.enrollCourseClicked.emit(this.course().id!);
     this.isEnrolled.set(true);
+    this.enrollCourseClicked.emit(this.course().id!);
   }
 
   private updateEnrollmentStatus() {

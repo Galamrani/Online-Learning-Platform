@@ -37,14 +37,6 @@ export class CourseCatalogComponent implements OnInit {
     this.route.data.subscribe();
   }
 
-  constructor() {
-    // Watch for view changes and reload courses dynamically
-    effect(() => {
-      const view = this.viewStore.view();
-      this.CourseManagerService.loadCourses().subscribe();
-    });
-  }
-
   onDeleteCourse(courseId: string) {
     this.CourseManagerService.deleteCourse(courseId).subscribe({
       next: () => this.toastr.success('Course has been successfully deleted!'),

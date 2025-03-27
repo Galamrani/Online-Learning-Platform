@@ -11,14 +11,17 @@ export class CourseApiService {
   private http = inject(HttpClient);
 
   getAllCourses(): Observable<CourseModel[]> {
+    console.log('getAllCourses invoked');
     return this.http.get<CourseModel[]>(environment.baseCoursesUrl);
   }
 
   getUserEnrolledCourses(): Observable<CourseModel[]> {
+    console.log('getUserEnrolledCourses invoked');
     return this.http.get<CourseModel[]>(environment.userEnrolledCoursesUrl);
   }
 
   getUserCreatedCourses(): Observable<CourseModel[]> {
+    console.log('getUserCreatedCourses invoked');
     return this.http.get<CourseModel[]>(environment.userCreatedCoursesUrl);
   }
 
